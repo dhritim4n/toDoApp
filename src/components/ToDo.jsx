@@ -216,7 +216,12 @@ function ToDoItem({ item }) {
         >
           {item?.title}
         </p>
-        <p className="italic text-xs text-indigo-600">{item?.status}</p>
+        <p
+        className={`italic text-xs text-white px-2 py-1 rounded 
+          ${item.status === "due" ? "bg-red-500" : "bg-green-500"}`}
+        >
+        {item?.status}
+      </p>
       </div>
       <div className="flex gap-2 mt-2 sm:mt-0">
         <button
