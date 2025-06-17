@@ -7,7 +7,7 @@ export default function ToDo() {
     <div className="flex flex-col items-center justify-start min-h-screen bg-orange-300 text-black px-4 py-6">
       <Title />
       <AddToDoInput />
-      <StatusDropDown />
+      <StatusFilterDropDown />
       <DeleteCompletedToDosButton />
       <EditToDoModal />
       <ToDoGrid />
@@ -57,7 +57,7 @@ function AddToDoInput() {
   );
 }
 
-function StatusDropDown() {
+function StatusFilterDropDown() {
   const { toDoDropDown, setToDoDropDown } = useContext(toDoContext);
 
   return (
@@ -134,11 +134,21 @@ function ToDoItem({ item }) {
     setEditToDoModal(true);
   }
 
+  function toggleToDoItemStatus(item) {
+    const updatedToDos = toDo.map((i) =>
+      i.id === item.id
+        ? { ...i, status: i.status === "due" ? "completed" : "due" }
+        : i
+    );
+    setToDo(updatedToDos);
+  }
+
   return (
     <div className="bg-rose-400 text-white px-4 py-3 rounded flex flex-col sm:flex-row items-start sm:items-center justify-between shadow text-sm">
       <div className="flex gap-4 flex-wrap">
+        <input type="checkbox" checked={item.status === "completed"} onChange = {() => toggleToDoItemStatus(item)} />
         <p className="font-bold">#{item?.id}</p>
-        <p>{item?.title}</p>
+        <p className={item.status === "completed" ? "line-through" : ""}>{item?.title}</p>
         <p className="italic">{item?.status}</p>
       </div>
       <div className="flex gap-2 mt-2 sm:mt-0">
