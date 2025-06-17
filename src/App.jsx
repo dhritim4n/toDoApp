@@ -9,10 +9,12 @@ function App() {
   
 
   const [toDo, setToDo] = useState([]);
-  const [toDoDropDown, setToDoDropDown] = useState("all")
+  const [toDoDropDown, setToDoDropDown] = useState("all");
+  const [editToDoModal, setEditToDoModal] = useState(false);
+  const [selectedToDoItem, setSelectedToDoItem] = useState({});
 
   const contextValue = {
-    toDo, setToDo, toDoDropDown, setToDoDropDown
+    toDo, setToDo, toDoDropDown, setToDoDropDown, editToDoModal, setEditToDoModal, selectedToDoItem, setSelectedToDoItem
 }
 
   return (
