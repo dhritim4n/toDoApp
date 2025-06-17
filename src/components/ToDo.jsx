@@ -148,7 +148,7 @@ function ToDoGrid() {
 
   if (!toDo.length) {
     return (
-      <div className="text-center mt-6">
+      <div className="text-center mt-4">
         <div className="text-4xl mb-4 animate-bounce">📝</div>
         <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
           No Tasks Found
