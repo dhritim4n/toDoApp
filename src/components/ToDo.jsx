@@ -4,10 +4,11 @@ import { EditToDoModal } from "./EditToDoModal";
 
 export default function ToDo() {
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-orange-300 text-black px-4 py-6">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-br from-yellow-200 via-orange-300 to-pink-200 text-black px-4 py-6">
       <Title />
       <AddToDoInput />
       <StatusFilterDropDown />
+      <ProgressBar />
       <DeleteCompletedToDosButton />
       <EditToDoModal />
       <ToDoGrid />
@@ -17,10 +18,48 @@ export default function ToDo() {
 
 function Title() {
   return (
-    <div className="w-full bg-indigo-600 py-4 mb-6">
-      <h1 className="text-center text-2xl sm:text-3xl font-bold text-white">TO DO LIST</h1>
+    <div className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 py-4 mb-6 shadow-md rounded">
+      <h1 className="text-center text-3xl sm:text-4xl font-extrabold text-white tracking-wide animate-pulse">
+        📝 TO DO LIST
+      </h1>
     </div>
   );
+}
+
+function ProgressBar() {
+  const { toDo } = useContext(toDoContext);
+  let progress = countProgress(toDo, "completed");
+
+  if (Number.isNaN(progress)) {
+    return null;
+  }
+
+  return (
+    <div className="bg-indigo-600 text-white font-semibold px-6 py-6 mb-6 rounded-xl shadow-xl text-center w-full max-w-lg">
+      TASK COMPLETION: {Math.floor(progress)}%
+      <div className="w-full mt-3 h-4 bg-white rounded-full overflow-hidden shadow-inner">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-pink-500 transition-all duration-700 ease-in-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      {progress === 100 && (
+        <p className="mt-2 text-green-200 font-bold text-sm animate-bounce">
+          🎉 All Tasks Completed!
+        </p>
+      )}
+    </div>
+  );
+}
+
+function countProgress(toDo, keyword) {
+  let count = 0;
+  for (let item of toDo) {
+    if (item.status === keyword) {
+      count += 1;
+    }
+  }
+  return Math.floor((count / toDo.length) * 100);
 }
 
 function AddToDoInput() {
@@ -39,19 +78,19 @@ function AddToDoInput() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 bg-cyan-100 p-4 rounded w-full max-w-lg mb-4">
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 bg-white/70 backdrop-blur-md p-4 rounded-xl w-full max-w-lg mb-4 shadow-md">
       <input
         type="text"
         placeholder="Add New To-Do"
         value={toDoListTitleInput}
         onChange={(e) => SetToDoListTitleInput(e.target.value)}
-        className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+        className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
       />
       <button
-        className="w-full sm:w-auto bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700 text-sm"
+        className="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all duration-200"
         onClick={AddNewToDoItem}
       >
-        Add
+        ➕ Add
       </button>
     </div>
   );
@@ -61,11 +100,11 @@ function StatusFilterDropDown() {
   const { toDoDropDown, setToDoDropDown } = useContext(toDoContext);
 
   return (
-    <div className="flex items-center justify-center bg-cyan-100 p-4 rounded w-full max-w-lg mb-4">
+    <div className="flex items-center justify-center bg-white/70 backdrop-blur-md p-4 rounded-xl w-full max-w-lg mb-4 shadow-md">
       <select
         value={toDoDropDown}
         onChange={(e) => setToDoDropDown(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded text-sm bg-white"
+        className="w-full p-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
       >
         <option value="all">All</option>
         <option value="due">Due</option>
@@ -86,9 +125,9 @@ function DeleteCompletedToDosButton() {
   return (
     <button
       onClick={DeleteCompletedToDos}
-      className="bg-rose-600 text-white px-4 py-2 rounded hover:bg-rose-700 text-sm mb-4"
+      className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-lg hover:scale-105 hover:shadow-lg transition-transform duration-300 text-sm mb-6"
     >
-      Delete Completed To Dos
+      🗑️ Delete Completed Tasks
     </button>
   );
 }
@@ -107,8 +146,23 @@ function ToDoGrid() {
     setToDo(toDos);
   }, []);
 
+  if (!toDo.length) {
+    return (
+      <div className="text-center mt-6">
+        <div className="text-4xl mb-4 animate-bounce">📝</div>
+        <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+          No Tasks Found
+        </h2>
+        <p className="text-lg text-gray-700 mt-2">
+          Add a New Task to get started !!
+        </p>
+      </div>
+    );
+  }
+  
+
   return (
-    <div className="flex flex-col gap-3 w-full max-w-lg">
+    <div className="flex flex-col gap-4 w-full max-w-lg">
       {toDo.map((item) => {
         if (toDoDropDown === "all" || item.status === toDoDropDown) {
           return <ToDoItem key={item.id} item={item} />;
@@ -144,25 +198,38 @@ function ToDoItem({ item }) {
   }
 
   return (
-    <div className="bg-rose-400 text-white px-4 py-3 rounded flex flex-col sm:flex-row items-start sm:items-center justify-between shadow text-sm">
-      <div className="flex gap-4 flex-wrap">
-        <input type="checkbox" checked={item.status === "completed"} onChange = {() => toggleToDoItemStatus(item)} />
+    <div className="bg-white text-black px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border-l-8 border-indigo-400 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-md text-sm">
+      <div className="flex gap-4 flex-wrap items-center">
+        <input
+          type="checkbox"
+          className="cursor-pointer accent-indigo-600 scale-125"
+          checked={item.status === "completed"}
+          onChange={() => toggleToDoItemStatus(item)}
+        />
         <p className="font-bold">#{item?.id}</p>
-        <p className={item.status === "completed" ? "line-through" : ""}>{item?.title}</p>
-        <p className="italic">{item?.status}</p>
+        <p
+          className={`${
+            item.status === "completed"
+              ? "line-through text-gray-400"
+              : "text-black"
+          } font-medium`}
+        >
+          {item?.title}
+        </p>
+        <p className="italic text-xs text-indigo-600">{item?.status}</p>
       </div>
       <div className="flex gap-2 mt-2 sm:mt-0">
         <button
           onClick={() => editButtonClick(item)}
-          className="bg-white text-rose-600 px-3 py-1 rounded hover:bg-gray-100"
+          className="bg-gradient-to-tr from-white to-indigo-100 text-indigo-700 px-3 py-1 rounded-md hover:bg-indigo-200 shadow-sm transition-all duration-200 hover:scale-105"
         >
-          Edit
+          ✏️ Edit
         </button>
         <button
           onClick={() => deleteButtonClick(item)}
-          className="bg-white text-rose-600 px-3 py-1 rounded hover:bg-gray-100"
+          className="bg-gradient-to-tr from-white to-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 shadow-sm transition-all duration-200 hover:scale-105"
         >
-          Delete
+          ❌ Delete
         </button>
       </div>
     </div>
