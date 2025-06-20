@@ -70,7 +70,7 @@ function AddToDoInput() {
     if (!toDoListTitleInput.trim()) return;
     
     const newToDoItem = {
-      id: toDo[toDo.length-1].id+1,
+      id: toDo.length === 0 ? 1 : toDo[toDo.length - 1].id + 1,
       status: "due",
       title: toDoListTitleInput.trim()
     };
