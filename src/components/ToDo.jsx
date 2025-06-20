@@ -68,11 +68,13 @@ function AddToDoInput() {
 
   const AddNewToDoItem = () => {
     if (!toDoListTitleInput.trim()) return;
+    
     const newToDoItem = {
-      id: Object.keys(toDo).length + 1,
+      id: toDo[toDo.length-1].id+1,
       status: "due",
       title: toDoListTitleInput.trim()
     };
+
     setToDo([...toDo, newToDoItem]);
     SetToDoListTitleInput("");
   };
